@@ -1,0 +1,9 @@
+[package]
+name = "rose"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+adw = { version = "0.7.0", package = "libadwaita" }
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
