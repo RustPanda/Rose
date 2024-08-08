@@ -10,5 +10,6 @@ fn main() -> glib::ExitCode {
     tracing_subscriber::fmt::init();
 
     let app = aplication::RoseApplication::new(Some(APP_ID));
+
     app.run()
 }

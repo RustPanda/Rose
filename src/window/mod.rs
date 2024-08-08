@@ -15,6 +15,18 @@ impl RoseApplicatioonWindow {
     pub fn new(app: &impl IsA<gtk::Application>) -> Self {
         glib::Object::builder().property("application", app).build()
     }
+
+    pub fn connect_new_tab<T, F>(&self, callback: F)
+    where
+        T: IsA<gtk::Widget>,
+        F: Fn(&RoseApplicatioonWindow, &str) -> Option<T> + Send + Sync + 'static,
+    {
+        self.connect("build-new-tab", true, move |values| {
+            let app: &RoseApplicatioonWindow = values[0].get().unwrap();
+            let path: &str = values[1].get().unwrap();
+            callback(app, path).map(|value| value.to_value())
+        });
+    }
 }
 
 impl RoseApplicatioonWindow {
@@ -33,6 +45,7 @@ impl RoseApplicatioonWindow {
 
                 },
             },
+            sidebar_child = adw::Bin {},
             sidebar = gtk::Box {
                 set_orientation: gtk::Orientation::Vertical,
                 append = &adw::HeaderBar {
@@ -42,10 +55,7 @@ impl RoseApplicatioonWindow {
 
                     pack_start: &collaps_button,
                 },
-                append = &adw::StatusPage {
-                    set_title: "Sidebat",
-                    set_vexpand: true,
-                }
+                append: &sidebar_child,
             },
             tab_view = adw::TabView {},
             tab_bar = adw::TabBar {
@@ -88,6 +98,10 @@ impl RoseApplicatioonWindow {
         self.set_content(Some(&content));
         self.set_tab_view(tab_view);
 
+        self.bind_property("sidebar", &sidebar_child, "child")
+            .sync_create()
+            .build();
+
         self.bind_property("expanded-sidebar", &sidebar, "visible")
             .sync_create()
             .build();
@@ -103,10 +117,11 @@ impl RoseApplicatioonWindow {
     fn setup_gactions(&self) {
         let action_new_tab: gio::ActionEntry<RoseApplicatioonWindow> =
             gio::ActionEntry::builder("new-tab")
-                .activate(|app: &RoseApplicatioonWindow, _, _| {
+                .activate(|app: &RoseApplicatioonWindow, _, _parameter| {
+                    let wiget = app.emit_by_name::<gtk::Widget>("build-new-tab", &[&"Maria"]);
                     app.tab_view()
                         .unwrap()
-                        .append(&new_page())
+                        .append(&wiget)
                         .set_title("Hello world");
                 })
                 .build();
@@ -119,11 +134,4 @@ impl RoseApplicatioonWindow {
 
         self.add_action_entries([action_new_tab, toggle_sidebar]);
     }
-}
-
-fn new_page() -> gtk::Widget {
-    adw::StatusPage::builder()
-        .title("Hello world!")
-        .build()
-        .upcast()
 }

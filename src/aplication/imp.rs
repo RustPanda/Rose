@@ -24,8 +24,24 @@ impl ApplicationImpl for RoseApplication {
         tracing::debug!("AdwApplication<RoseApplication>:activate");
         self.parent_activate();
         let app = self.obj();
-
         let window = window::RoseApplicatioonWindow::new(app.as_ref());
+
+        {
+            let status_page = adw::StatusPage::builder()
+                .vexpand(true)
+                .title("Sidebar")
+                .build();
+            window.set_sidebar(status_page);
+        }
+
+        window.connect_new_tab(|_app, _path| {
+            Some(
+                adw::StatusPage::builder()
+                    .vexpand(true)
+                    .title("Myaw")
+                    .build(),
+            )
+        });
 
         window.present()
     }
