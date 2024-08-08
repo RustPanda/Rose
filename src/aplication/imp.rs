@@ -29,6 +29,12 @@ impl ApplicationImpl for RoseApplication {
 
         window.present()
     }
+    fn startup(&self) {
+        tracing::debug!("GtkApplication<RoseApplication>::startup");
+        self.parent_startup();
+        let app = self.obj();
+        app.setup_accels();
+    }
 }
 
 impl GtkApplicationImpl for RoseApplication {}

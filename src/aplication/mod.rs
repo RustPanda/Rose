@@ -1,6 +1,7 @@
 use adw::gio;
 use adw::glib;
 use adw::gtk;
+use adw::prelude::*;
 
 mod imp;
 
@@ -15,5 +16,9 @@ impl RoseApplication {
         glib::Object::builder()
             .property("application-id", app_id)
             .build()
+    }
+
+    fn setup_accels(&self) {
+        self.set_accels_for_action("win.toggle-sidebar", &["<Ctl>b"]);
     }
 }

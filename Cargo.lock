@@ -561,10 +561,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "relm4-macros"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc5885640821d60062497737dd42fd04248d13c7ecccee620caaa4b210fe9905"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "rose"
 version = "0.1.0"
 dependencies = [
  "libadwaita",
+ "relm4-macros",
  "tracing",
  "tracing-subscriber",
 ]
