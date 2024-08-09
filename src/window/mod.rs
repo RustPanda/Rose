@@ -47,14 +47,14 @@ impl RoseApplicatioonWindow {
     fn build_window_ui(&self) {
         relm4_macros::view! {
             collaps_button = gtk::Button {
-                set_icon_name: "sidebar-show-symbolic",
+                set_icon_name: "go-previous-symbolic",
                 set_action_name: Some("win.toggle-sidebar"),
             },
             expand_button = gtk::Box {
                 set_orientation: gtk::Orientation::Horizontal,
                 add_css_class: "toolbar",
                 append = &gtk::Button {
-                    set_icon_name: "sidebar-show-symbolic",
+                    set_icon_name: "go-next-symbolic",
                     set_action_name: Some("win.toggle-sidebar"),
 
                 },

@@ -52,7 +52,6 @@ impl ApplicationImpl for RoseApplication {
                         if theme_name.to_lowercase().contains("dark")
                             || settings.is_gtk_application_prefer_dark_theme()
                         {
-                            // Установка цветов
                             let background = gdk::RGBA::new(0.0, 0.0, 0.0, 0.0); // черный фон
                             let foreground = gdk::RGBA::new(1.0, 1.0, 1.0, 1.0); // белый текст
 
@@ -107,20 +106,6 @@ impl ApplicationImpl for RoseApplication {
                 callback(&settings);
             }
 
-            vte.spawn_async(
-                vte::PtyFlags::empty(),
-                None,
-                &["/bin/zsh"],
-                &[],
-                glib::SpawnFlags::DEFAULT,
-                || {},
-                1000,
-                None::<&gio::Cancellable>,
-                |result| {
-                    let _ = dbg!(result);
-                },
-            );
-
             Some(vte)
         });
 
@@ -130,6 +115,29 @@ impl ApplicationImpl for RoseApplication {
             page.set_title(path);
 
             if let Some(terminal) = widget.downcast_ref::<vte::Terminal>() {
+                terminal.spawn_async(
+                    vte::PtyFlags::empty(),
+                    None,
+                    &["/bin/zsh"],
+                    &[],
+                    glib::SpawnFlags::DEFAULT,
+                    || {},
+                    1000,
+                    None::<&gio::Cancellable>,
+                    glib::clone!(
+                        #[weak]
+                        tab_view,
+                        #[weak]
+                        page,
+                        move |result| {
+                            match result {
+                                Ok(_pid) => {}
+                                Err(_exit_code) => tab_view.close_page(&page),
+                            };
+                        }
+                    ),
+                );
+
                 terminal.connect_child_exited(move |_, _exit_code| tab_view.close_page(&page));
             }
         });
