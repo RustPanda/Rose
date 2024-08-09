@@ -27,6 +27,20 @@ impl RoseApplicatioonWindow {
             callback(app, path).map(|value| value.to_value())
         });
     }
+
+    pub fn connect_add_tab<F>(&self, callback: F)
+    where
+        F: Fn(&RoseApplicatioonWindow, &gtk::Widget, &str) + Send + Sync + 'static,
+    {
+        self.connect("add-new-tab", true, move |values| {
+            let app: &RoseApplicatioonWindow = values[0].get().unwrap();
+            let widget: &gtk::Widget = values[1].get().unwrap();
+            let path: &str = values[2].get().unwrap();
+
+            callback(app, widget, path);
+            None
+        });
+    }
 }
 
 impl RoseApplicatioonWindow {
@@ -109,9 +123,6 @@ impl RoseApplicatioonWindow {
             .invert_boolean()
             .sync_create()
             .build();
-        self.bind_property("expanded-sidebar", &collaps_button, "visible")
-            .sync_create()
-            .build();
     }
 
     fn setup_gactions(&self) {
@@ -119,10 +130,7 @@ impl RoseApplicatioonWindow {
             gio::ActionEntry::builder("new-tab")
                 .activate(|app: &RoseApplicatioonWindow, _, _parameter| {
                     let wiget = app.emit_by_name::<gtk::Widget>("build-new-tab", &[&"Maria"]);
-                    app.tab_view()
-                        .unwrap()
-                        .append(&wiget)
-                        .set_title("Hello world");
+                    app.emit_by_name::<()>("add-new-tab", &[&wiget, &"Maria"]);
                 })
                 .build();
         let toggle_sidebar: gio::ActionEntry<RoseApplicatioonWindow> =

@@ -44,10 +44,15 @@ impl ObjectImpl for RoseApplicatioonWindow {
     fn signals() -> &'static [Signal] {
         static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
         SIGNALS.get_or_init(|| {
-            vec![Signal::builder("build-new-tab")
-                .param_types([String::static_type()])
-                .return_type::<gtk::Widget>()
-                .build()]
+            vec![
+                Signal::builder("build-new-tab")
+                    .param_types([String::static_type()])
+                    .return_type::<gtk::Widget>()
+                    .build(),
+                Signal::builder("add-new-tab")
+                    .param_types([gtk::Widget::static_type(), String::static_type()])
+                    .build(),
+            ]
         })
     }
 }
